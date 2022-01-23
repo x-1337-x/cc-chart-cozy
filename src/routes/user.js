@@ -2,6 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
+const { checkAuth } = require('../utils/checkAuth');
 const userRouter = express.Router();
 
 userRouter.post('/register', async (req, res, next) => {
@@ -9,7 +10,7 @@ userRouter.post('/register', async (req, res, next) => {
 		let { email, password, repeatPassword } = req.body;
 
 		if (!email || !password || !repeatPassword || password !== repeatPassword) {
-			res.sendStatus(403).send('Check your data');
+			res.status(403).send('Check your data');
 		}
 
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,7 +32,7 @@ userRouter.post('/login', async (req, res, next) => {
 		let { email, password } = req.body;
 
 		if (!email || !password) {
-			res.sendStatus(403).send('Check your data');
+			res.status(403).send('Check your data');
 			return;
 		}
 
@@ -41,7 +42,7 @@ userRouter.post('/login', async (req, res, next) => {
 		const user = queryResult.rows[0];
 
 		if (!user) {
-			res.sendStatus(403).send('Check your data');
+			res.status(403).send('Check your data');
 			return;
 		}
 
@@ -57,12 +58,23 @@ userRouter.post('/login', async (req, res, next) => {
 			res.json({ token });
 			return;
 		} else {
-			res.sendStatus(403).send('Check your data');
+			res.status(403).send('Check your data');
 			return;
 		}
 	} catch (error) {
 		next(error);
 	}
+});
+
+userRouter.post('/validateToken', checkAuth, (req, res) => {
+	const token = jwt.sign(
+		{ user_id: res.locals.user_id },
+		process.env.JWT_SECRET,
+		{
+			expiresIn: '6h',
+		}
+	);
+	res.json({ token });
 });
 
 // userRouter.get('/getUsers', async (req, res, next) => {
