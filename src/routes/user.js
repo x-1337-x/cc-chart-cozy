@@ -2,7 +2,7 @@ const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const db = require('../db');
-const { checkAuth } = require('../utils/checkAuth');
+const checkAuth = require('../utils/checkAuth');
 const userRouter = express.Router();
 
 userRouter.post('/register', async (req, res, next) => {

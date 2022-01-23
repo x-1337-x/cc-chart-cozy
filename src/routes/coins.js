@@ -3,7 +3,7 @@ const db = require('../db');
 const coinsRouter = express.Router();
 
 coinsRouter
-	.route('/')
+	.route('/coins')
 	.get(async (req, res, next) => {
 		try {
 			let queryResult = await db.query(`select * from Coins`);
@@ -29,7 +29,7 @@ coinsRouter
 	});
 
 coinsRouter
-	.route('/:id')
+	.route('/coins/:id')
 	.get(async (req, res, next) => {
 		try {
 			let queryResult = await db.query(`select * from Coins where coin_id=$1`, [
